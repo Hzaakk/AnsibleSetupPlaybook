@@ -2,7 +2,7 @@
 - hosts: all
   gather_facts: no 
   vars:
-    user: student
+    user: username
     packages:
       - nmap
       - bash-completion
