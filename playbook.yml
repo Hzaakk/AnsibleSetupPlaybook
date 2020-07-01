@@ -15,7 +15,6 @@
       - "alias sudo='sudo '"
       - "cd /home/{{ user }}"
 
-
   tasks:
 
     - name: "installing {{ packages | join(' ') }}"
