@@ -1,71 +1,71 @@
 ---
 - hosts: all
-  gather_facts: no 
+  gather_facts: no
   vars:
-  
-    user: username
 
-    home_dirs:
-      - "/home/{{user}}/"
-      - "/root/"
+    users:
+      - user
+      - root
 
     packages:
       - nmap
       - bash-completion
-      
-    to_bashrc:
-      - 'PS1=''\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '''
-      - "alias vi=vim"
-      - "alias ll='ls -lF'"
-      - "alias la='ls -aF'"
-      - "alias lal='ls -alF'"
-      - "alias sudo='sudo '"
-      - "cd /home/{{ user }}"
 
-    to_vimrc:
-      - "autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab"
-      - "set autoindent"
+    to_bashrc: |
+      PS1='\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+      alias vi=vim
+      alias ll='ls -lF'
+      alias la='ls -aF'
+      alias lal='ls -alF'
+      alias sudo='sudo '
 
-    to_profiled:
-    - "export EDITOR=vim"
-    - "export LESS='-Ri'"
+    to_vimrc: |
+      autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+      set autoindent
+
+    to_profiled: |
+      export EDITOR=vim
+      export LESS='-Ri'
 
   tasks:
 
-    - name: "installing {{ packages | join(' ') }}"
+    - name: "installing {{ packages | join(', ') }}"
       yum:
         name: "{{ packages }}"
         state: latest
 
     - name: adding to .bashrc's
-      lineinfile:
-        path: "{{ item[0] }}.bashrc"
-        state: present
-        line: "{{ item[1] }}"
-      loop:
-        "{{ home_dirs | product(to_bashrc) | list }}"
-    
-    - name: adding to .vimrc's
-      lineinfile:
+      blockinfile:
         create: yes
-        path: "{{ item[0] }}.vimrc"
+        path: "~/.bashrc"
         state: present
-        line: "{{ item[1] }}"
-      loop:
-        "{{ home_dirs | product(to_vimrc) | list }}"
+        block: "{{ to_bashrc }}"
+      become: yes
+      become_user: "{{ item }}"
+      loop: "{{ users }}"
+
+    - name: adding to .vimrc's
+      blockinfile:
+        create: yes
+        path: "~/.vimrc"
+        state: present
+        block: "{{ to_vimrc }}"
+        marker: "\"{mark} ANSIBLE MANAGED BLOCK"
+      become: yes
+      become_user: "{{ item }}"
+      loop: "{{ users }}"
 
     - name: adding to /etc/profile.d/ansible.sh
-      lineinfile:
-        path: /etc/profile.d/ansible.sh
-        state: present
-        create: yes
-        line: "{{ item }}"
-      loop: "{{ to_profiled }}"
+      copy:
+        content: "{{ to_profiled }}"
+        dest: /etc/profile.d/ansible.sh
+        force: yes
 
-    - name: "adding {{ user }} to /etc/sudoers"
+    - name: "adding {{ users | join(', ') }} to /etc/sudoers"
       lineinfile:
         path: /etc/sudoers
         state: present
-        regexp: '^{{ user }}\s'
-        line: "{{ user }} ALL=(ALL:ALL) NOPASSWD: ALL"
+        regexp: '^{{ item }}\s'
+        line: "{{ item }} ALL=(ALL:ALL) NOPASSWD: ALL"
+      loop: "{{ users }}"
 ...
