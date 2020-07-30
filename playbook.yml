@@ -30,7 +30,7 @@
   tasks:
 
     - name: "installing {{ packages | join(', ') }}"
-      yum:
+      package:
         name: "{{ packages }}"
         state: latest
 
