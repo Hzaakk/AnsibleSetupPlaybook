@@ -34,7 +34,7 @@
         name: "{{ packages }}"
         state: latest
 
-    - name: adding to .bashrc's
+    - name: adding to .bashrcs
       blockinfile:
         create: yes
         path: "~/.bashrc"
@@ -44,7 +44,7 @@
       become_user: "{{ item }}"
       loop: "{{ users }}"
 
-    - name: adding to .vimrc's
+    - name: adding to .vimrcs
       blockinfile:
         create: yes
         path: "~/.vimrc"
