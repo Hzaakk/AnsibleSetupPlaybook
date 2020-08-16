@@ -1,5 +1,11 @@
-sudo apt update
-sudo apt -y install ansible
+if which apt > /dev/null; then
+        sudo apt update
+        sudo apt -y install ansible
+elif which yum > /dev/null; then
+        sudo yum update
+        sudo yum -y install ansible
+fi
+
 master='https://raw.githubusercontent.com/hzaakk/ansiblesetupplaybook/master'
 curl  "${master}/ansible.cfg"> ~/.ansible.cfg
 curl "${master}/inventory" > ~/.inventory
