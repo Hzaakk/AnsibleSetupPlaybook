@@ -1,8 +1,9 @@
+#!/bin/bash
 if which apt > /dev/null; then
         sudo apt update
         sudo apt -y install ansible
 elif which yum > /dev/null; then
-        sudo yum update
+        sudo yum check-update
         sudo yum -y install ansible
 fi
 
