@@ -20,6 +20,7 @@
       alias ll='ls -lhF'
       alias lal='ls -alhF'
       alias sudo='sudo '
+      set -o vi
 
     to_vimrc: |
       autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
