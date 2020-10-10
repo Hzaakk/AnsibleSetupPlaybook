@@ -22,6 +22,7 @@
       alias lal='ls -alhF'
       alias sudo='sudo '
       alias k=kubectl
+      source /etc/bash_completion
       complete -F __start_kubectl k
 
     to_vimrc: |
