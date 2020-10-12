@@ -25,12 +25,13 @@
       source /etc/bash_completion
       complete -F __start_kubectl k
       export EDITOR=vim
-      export LESS='-Ri'
+      export LESS='-RiQ'
 
     to_vimrc: |
       autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
       autocmd FileType python setlocal ts=4 sts=4 sw=4 expandtab
       autocmd FileType js setlocal ts=4 sts=4 sw=4 expandtab
+      set visualbell
       set autoindent
 
   tasks:
@@ -46,6 +47,7 @@
         path: "~/.bashrc"
         state: present
         block: "{{ to_bashrc }}"
+        mode: 0644
       become: yes
       become_user: "{{ item }}"
       loop: "{{ users }}"
@@ -56,10 +58,17 @@
         path: "~/.vimrc"
         state: present
         block: "{{ to_vimrc }}"
+        mode: 0644
         marker: "\"{mark} ANSIBLE MANAGED BLOCK"
       become: yes
       become_user: "{{ item }}"
       loop: "{{ users }}"
+
+    - name: disabling the bell sound in bash
+      lineinfile:
+        path: /etc/inputrc
+        regex: "^#? *set bell-style.*$"
+        line: set bell-style none
 
     - name: "adding {{ users | join(', ') }} to /etc/sudoers"
       lineinfile:
@@ -67,5 +76,6 @@
         state: present
         regexp: '^{{ item }}\s'
         line: "{{ item }} ALL=(ALL:ALL) NOPASSWD: ALL"
+        validate: "visudo -cf %s"
       loop: "{{ users }}"
 ...
