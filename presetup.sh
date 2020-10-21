@@ -1,5 +1,5 @@
 #!/bin/bash
-if ! [ "$1" == "1" ]; then
+if [ "$1" == "1" ]; then
         if which apt > /dev/null; then
                 sudo apt update
                 sudo apt -y install ansible
