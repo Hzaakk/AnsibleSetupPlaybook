@@ -35,6 +35,7 @@
       autocmd FileType js setlocal ts=4 sts=4 sw=4 expandtab
       set visualbell
       set autoindent
+      filetype detect
 
   tasks:
 
