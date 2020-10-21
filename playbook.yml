@@ -27,7 +27,7 @@
       export EDITOR=vim
       export LESS='-RiQ'
       export HISTSIZE=20000
-      export HISTFILESIZE=40000
+      export HISTFILESIZE=-1
 
     to_vimrc: |
       autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
@@ -43,7 +43,16 @@
       package:
         name: "{{ packages }}"
         state: latest
-
+        
+    - name: commenting out default bash_history settings
+      replace:
+        path: "~/.bashrc"
+        regexp: "({{ item[1] }})"
+        replace: '#\1'
+      become: yes
+      become_user: "{{ item[0] }}"
+      loop: "{{ users | product(['^HISTSIZE=(?!20000)', '^HISTFILESIZE=(?!-1)']) | list }}"
+      
     - name: adding to .bashrcs
       blockinfile:
         create: yes
