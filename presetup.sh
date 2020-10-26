@@ -9,6 +9,6 @@ if [ "$1" == "1" ]; then
         fi
 fi
 master='https://raw.githubusercontent.com/hzaakk/ansiblesetupplaybook/master'
-curl "${master}/ansible.cfg" > ~/.ansible.cfg
-curl "${master}/inventory" > ~/.inventory
-curl "${master}/playbook.yml" > ~/playbook.yml
+curl "${master}/ansible.cfg" > ./ansible.cfg
+curl "${master}/inventory" > ./inventory
+curl "${master}/playbook.yml" > ./playbook.yml
